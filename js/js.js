@@ -132,49 +132,12 @@ function CarouselPointer(){
 
 
 //----------------------------------------导航下拉菜单
-var NavData ={
-    0:{
-        src:["img/nav/xiaomi/xiaomiNOTE2-320-220!160x110.jpg","img/nav/xiaomi/MIX-320-220!160x110.jpg","img/nav/xiaomi/xiaomi5S-320-220!160x110.jpg","img/nav/xiaomi/5spluse320_220!160x110.jpg","img/nav/xiaomi/mi5!160x110.jpg","img/nav/xiaomi/maxdingbu!160x110.jpg"],
-        a:["小米Note 2","小米MIX","小米5s","小米5s Plus","小米手机5","小米Max"],
-        p:["2799元起","3499元","1899元","2299元起","1599元起","1299元起"]
-    },
-    1:{
-        src:["img/nav/redmi/hmn4xtb!160x110.jpg","img/nav/redmi/hongminote4!160x110.jpg","img/nav/redmi/320-2202!160x110.jpg","img/nav/redmi/320-220!160x110.jpg"],
-        a:["红米Note 4X","红米Note 4","红米4","红米4A"],
-        p:["999元起","999元起","799元起","599元"]
-    },
-    2:{
-        src:["img/nav/pad/mipad2-16!160x110.jpg","img/nav/pad/mipad2-64!160x110.jpg","img/nav/pad/mipad2-64-win!160x110.jpg","img/nav/pad/bijiben32012.5!160x110.jpg","img/nav/pad/bijiben320!160x110.jpg"],
-        a:["小米平板2 16GB","小米平板2 64GB","小米平板2 64G Windows版","小米笔记本Air 12.5\"","小米笔记本Air 13.3\""],
-        p:["999元","1299元","1299元","3449元","4999元"]
-    },
-    3:{
-        src:["img/nav/tv/101848.png","img/nav/tv/101855xin.png","img/nav/tv/101860xin.png","img/nav/tv/65yingyuan.png","img/nav/tv/70dianshi.png","img/nav/tv/101865.png"],
-        a:["小米电视3s 48英寸","小米电视3s 55英寸","小米电视3s 60英寸","小米电视3s 65英寸","小米电视3 70英寸","查看全部"],
-        p:["2599元","3999元","4799元","6699元","9999元","小米电视"]
-    },
-    4:{
-        src:["img/nav/box/mihezi.png","img/nav/box/mihezi.png","img/nav/box/hezi3s!160x110.jpg","img/nav/box/hezimini.png","img/nav/box/320x220.png","img/nav/box/putonban!160x110.jpg"],
-        a:["小米盒子3s","小米盒子3c","小米盒子3 增强版","小米盒子mini版","小米家庭影院","小米家庭音响 标准版"],
-        p:["299元","199元","399元","179元","1999元","699元"]
-    },
-    5:{
-        src:["img/nav/wifi/miwifi!160x110.jpg","img/nav/wifi/miwifi-3!160x110.jpg","img/nav/wifi/luyouqi3c!160x110.jpg","img/nav/wifi/fdq2!160x110.jpg"],
-        a:["全新小米路由器","小米路由器 3","小米路由器 3C","小米WiFi放大器 2"],
-        p:["699元","149元","99元","49元"]
-    },
-    6:{
-        src:["img/nav/smart/scooter!160x110.jpg","img/nav/smart/water2!160x110.jpg","img/nav/smart/dianfanbao!160x110.jpg","img/nav/smart/air2!160x110.jpg","img/nav/smart/xiaobai!160x110.jpg","img/nav/smart/shdt.png"],
-        a:["九号平衡车","小米净水器","米家压力IH电饭煲","小米空气净化器 2","智能摄像机","查看全部"],
-        p:["1999元","1299元起","999元","699元","399元","智能硬件"]
-    }
 
-};
 function NavList(){
     var list_a =$("#nav .list>a");
     var list_content =  $(".nav-list");
     for(var i=0;i<7;i++) {
-        list_a .eq(i).on("mouseover", {key: i}, AddContent);
+        list_a .eq(i).on("mouseover", {index: i}, AddContent);
     }
     list_a.on("mouseout",function(){
         list_content.slideUp(100);
@@ -205,21 +168,26 @@ function CreateContent(){
 }
 
 function AddContent(e) {
-    var key = e.data.key;
+    var index = e.data.index;
     var ul = $(".nav-list ul");
+    $.ajax({
+        type:"GET",
+        url:"data.json",
+        success:function(data){
+            if (ul.children()) {
+                ul.empty();
+            }
+            var length = data.data[index].src.length;
+            for (var i = 0; i < length; i++) {
+                CreateContent();
+                ul.children("li").eq(i).find("img").attr("src", data.data[index].src[i]);
+                ul.children("li").eq(i).find("div>a").text(data.data[index].a[i]);
+                ul.children("li").eq(i).find("p").text(data.data[index].p[i]);
+            }
+            ul.children("li:last-child").addClass("last");
+        }
+    });
     $(".nav-list").stop(true,false).slideDown(100);
-    var length = NavData[key].src.length;
-    if (ul.children()) {
-        ul.empty();
-    }
-    for (var i = 0; i < length; i++) {
-        CreateContent();
-        ul.children("li").eq(i).find("img").attr("src", NavData[key].src[i]);
-        ul.children("li").eq(i).find("div>a").text(NavData[key].a[i]);
-        ul.children("li").eq(i).find("p").text(NavData[key].p[i]);
-    }
-    ul.children("li:last-child").addClass("last");
-
 
 }
 
